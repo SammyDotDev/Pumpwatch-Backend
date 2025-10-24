@@ -1,0 +1,13 @@
+### POST request to create user
+POST http://localhost:8080/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "firstName": "Yamada",
+  "lastName": "Aiko",
+  "username": "AfroYamada",
+  "email": "afroyamada@gmail.com",
+  "password": "password",
+  "phoneNumber": "09080170598"
+}
+###
