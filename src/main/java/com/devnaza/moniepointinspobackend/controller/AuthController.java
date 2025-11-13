@@ -2,56 +2,61 @@ package com.devnaza.moniepointinspobackend.controller;
 
 import com.devnaza.moniepointinspobackend.dto.UserDto;
 import com.devnaza.moniepointinspobackend.dto.apiResponse.ApiResponseDto;
-import com.devnaza.moniepointinspobackend.model.User;
+import com.devnaza.moniepointinspobackend.dto.requestsDto.UserLogin;
+import com.devnaza.moniepointinspobackend.exception.ApiExceptionHandler;
+import com.devnaza.moniepointinspobackend.exception.UserAlreadyExistsException;
 import com.devnaza.moniepointinspobackend.repository.UserRepository;
 import com.devnaza.moniepointinspobackend.service.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
-@Controller
-//@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/auth")
+@RestController
 public class AuthController {
 
 
     private final UserServiceImpl userServiceImpl;
+    private final UserRepository userRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
-    public AuthController(UserServiceImpl userServiceImpl) {
+    public AuthController(UserServiceImpl userServiceImpl,
+                          UserRepository userRepository) {
         this.userServiceImpl = userServiceImpl;
+        this.userRepository = userRepository;
     }
 
 
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public String signup(@ModelAttribute @RequestBody @Valid UserDto userDto,
-                    BindingResult bindingResult, Model model){
+    public ResponseEntity<ApiResponseDto> signup(@RequestBody @Valid UserDto userDto) throws Exception {
         if(userRepository.existsByEmail(userDto.email())){
-            bindingResult.rejectValue("email", "error.user", "email already exists");
-            return null;
+            throw new UserAlreadyExistsException("User with email " + userDto.email() + " already exists");
         }
 
-        if(bindingResult.hasErrors()){
-            log.info("Binding result errors: {}", bindingResult.getAllErrors());
-            model.addAttribute("user", new User());
-            return "signup";
-        }
         UserDto savedUser = userServiceImpl.createUser(userDto);
-//        return new ResponseEntity<ApiResponseDto>(new ApiResponseDto("User created successfully", savedUser), HttpStatus.CREATED);
-        return "redirect:/login?success";
+        return new ResponseEntity<>(new ApiResponseDto("User created successfully", savedUser), HttpStatus.CREATED);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponseDto> login(@Valid @RequestBody UserLogin userLogin){
+
+
+        UserDto loadedUser =
+                userServiceImpl.validateUser(userLogin);
+
+
+        log.info("User login fields: {}", userLogin.username());
+        return ResponseEntity.ok().body(new ApiResponseDto("Sign in " +
+                                                                   "successful", loadedUser));
+    }
+
+
 
 
 }

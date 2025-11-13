@@ -17,4 +17,10 @@ public class ViewController {
         model.addAttribute("user", new User());
         return "signup";
     }
+
+    @GetMapping("/login")
+    private String showLoginForm(Model model){
+        model.addAttribute("user", new User());
+        return "login";
+    }
 }
