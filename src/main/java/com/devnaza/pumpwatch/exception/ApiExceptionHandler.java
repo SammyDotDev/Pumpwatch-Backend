@@ -1,6 +1,8 @@
 package com.devnaza.pumpwatch.exception;
 
 import com.devnaza.pumpwatch.dto.ErrorResponse;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.ServletException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,6 +101,31 @@ public class ApiExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+    @ExceptionHandler(ServletException.class)
+    public ResponseEntity<ErrorResponse> handleServletException(ServletException exception){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                                              .message(exception.getMessage())
+                                              .status(HttpStatus.FORBIDDEN.getReasonPhrase())
+                                              .statusCode(HttpStatus.FORBIDDEN.value())
+                                              .timestamp(System.currentTimeMillis())
+                                              .build();
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException exception){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                                              .message(exception.getMessage())
+                                              .status(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                                              .statusCode(HttpStatus.UNAUTHORIZED.value())
+                                              .timestamp(System.currentTimeMillis())
+                                              .build();
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception){
 
@@ -114,6 +141,8 @@ public class ApiExceptionHandler {
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
+
+
 
     private String resolveConstraintMessage(DataIntegrityViolationException ex) {
         String cause = ex.getMostSpecificCause().getMessage();

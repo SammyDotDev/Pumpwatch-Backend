@@ -43,16 +43,15 @@ public class UserControllerTest {
 
     @Test
     public void signupSuccess() throws Exception {
-        UserDto userDto = new UserDto("sammy", "dev", "devnaza", "devnaza@gmail.com", "12345678", "09080170598");
 
         User saved = new User();
         saved.setId(UUID.randomUUID());
-        saved.setFirstName(userDto.firstName());
-        saved.setLastName(userDto.lastName());
-        saved.setUsername(userDto.username());
-        saved.setPassword(userDto.password());
-        saved.setEmail(userDto.email());
-        saved.setPhoneNumber(userDto.phoneNumber());
+        saved.setFirstName(user.getFirstName());
+        saved.setLastName(user.getLastName());
+        saved.setUsername(user.getUsername());
+        saved.setPassword(user.getPassword());
+        saved.setEmail(user.getEmail());
+        saved.setPhoneNumber(user.getPhoneNumber());
 
 
         UserDto savedDto = new UserDto(
@@ -60,7 +59,6 @@ public class UserControllerTest {
                 saved.getLastName(),
                 saved.getUsername(),
                 saved.getEmail(),
-                saved.getPassword(),
                 saved.getPhoneNumber()
         );
 

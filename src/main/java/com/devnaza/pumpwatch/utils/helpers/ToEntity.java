@@ -16,7 +16,6 @@ public class ToEntity {
         user.setUsername(userDto.username());
         user.setEmail(userDto.email());
         user.setPhoneNumber(String.valueOf(userDto.phoneNumber()));
-        user.setPassword(userDto.password());
         return user;
     }
 

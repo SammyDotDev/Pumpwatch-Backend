@@ -8,7 +8,7 @@ public class ToDto {
     public ToDto(){}
 
     public UserDto convertToUserDto(User user){
-        return new UserDto(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getPhoneNumber());
+        return new UserDto(user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber());
     }
 
 }

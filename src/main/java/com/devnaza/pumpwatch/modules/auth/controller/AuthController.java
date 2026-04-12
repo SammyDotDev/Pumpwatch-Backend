@@ -1,18 +1,20 @@
 package com.devnaza.pumpwatch.modules.auth.controller;
 
 import com.devnaza.pumpwatch.dto.ApiResponseDto;
-import com.devnaza.pumpwatch.exception.UserAlreadyExistsException;
+import com.devnaza.pumpwatch.modules.auth.dto.RefreshTokenDto;
+import com.devnaza.pumpwatch.modules.auth.dto.TokenPair;
+import com.devnaza.pumpwatch.modules.auth.service.impl.AuthServiceImpl;
+import com.devnaza.pumpwatch.modules.auth.service.impl.RefreshTokenServiceImpl;
 import com.devnaza.pumpwatch.modules.user.dto.UserDto;
 import com.devnaza.pumpwatch.modules.user.dto.UserLogin;
-import com.devnaza.pumpwatch.modules.user.repository.UserRepository;
-import com.devnaza.pumpwatch.modules.user.service.UserServiceImpl;
+import com.devnaza.pumpwatch.modules.user.model.User;
+
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -21,18 +23,22 @@ import java.util.Map;
 public class AuthController {
 
 
-    private final UserServiceImpl userServiceImpl;
+    private final AuthServiceImpl authServiceImpl;
+    private final RefreshTokenServiceImpl refreshTokenServiceImpl;
 
 
-    public AuthController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+
+    public AuthController(AuthServiceImpl authServiceImpl,
+                          RefreshTokenServiceImpl refreshTokenServiceImpl) {
+        this.authServiceImpl = authServiceImpl;
+        this.refreshTokenServiceImpl = refreshTokenServiceImpl;
     }
 
 
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponseDto> signup(@RequestBody @Valid UserDto userDto) throws Exception {
-        UserDto savedUser = userServiceImpl.createUser(userDto);
+    public ResponseEntity<ApiResponseDto> signup(@RequestBody @Valid User user) throws Exception {
+        UserDto savedUser = authServiceImpl.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("User created " + "successfully",
                 savedUser));
     }
@@ -41,18 +47,22 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto> login(@Valid @RequestBody UserLogin userLogin){
 
 
-        Map<String, String> accessToken = new HashMap<>();
-        String loadedUser =
-                userServiceImpl.validateUser(userLogin);
-        accessToken.put("accessToken", loadedUser);
+        Map<String, Object> validatedUser =
+                authServiceImpl.validateUser(userLogin);
 
 
-        log.info("User login fields: {}", userLogin.username());
+
+        log.info("User login email: {}", userLogin.email());
         return ResponseEntity.ok().body(new ApiResponseDto("Sign in " +
-                                                                   "successful", accessToken));
+                                                                   "successful", validatedUser));
     }
 
-
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenPair> refresh(@Valid @RequestBody RefreshTokenDto refreshToken){
+        TokenPair tokens =
+                refreshTokenServiceImpl.rotateRefreshToken(refreshToken.refreshToken());
+        return ResponseEntity.ok().body(tokens);
+    }
 
 
 }
