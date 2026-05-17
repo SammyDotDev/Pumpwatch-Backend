@@ -1,20 +1,12 @@
-package com.devnaza.pumpwatch.modules.user.controller;
+package com.devnaza.pumpwatch.modules.user;
 
-import com.devnaza.pumpwatch.dto.ApiResponseDto;
-import com.devnaza.pumpwatch.exception.UserAlreadyExistsException;
 import com.devnaza.pumpwatch.modules.user.dto.UserDto;
-import com.devnaza.pumpwatch.modules.user.dto.UserLogin;
 import com.devnaza.pumpwatch.modules.user.repository.UserRepository;
 import com.devnaza.pumpwatch.modules.user.service.UserServiceImpl;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RequestMapping("/api/v1/user")

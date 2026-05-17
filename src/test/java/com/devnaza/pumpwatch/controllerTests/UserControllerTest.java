@@ -1,10 +1,9 @@
 package com.devnaza.pumpwatch.controllerTests;
 
-import com.devnaza.pumpwatch.modules.auth.controller.AuthController;
+import com.devnaza.pumpwatch.modules.auth.AuthController;
 import com.devnaza.pumpwatch.modules.user.dto.UserDto;
 import com.devnaza.pumpwatch.modules.user.model.User;
 import com.devnaza.pumpwatch.modules.user.service.UserServiceImpl;
-import com.devnaza.pumpwatch.utils.helpers.ToDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

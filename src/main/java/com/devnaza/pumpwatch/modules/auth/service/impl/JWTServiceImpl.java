@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -31,11 +32,11 @@ public class JWTServiceImpl implements JWTService {
     }
 
     public String generateAccessToken(User user){
-        return getClaims(user.getEmail(), accessExpiry);
+        return getClaims(user.getId(),user.getEmail(), accessExpiry);
     }
 
     public String generateRefreshToken(User user){
-        return getClaims(user.getEmail(), refreshExpiry);
+        return getClaims(user.getId(), user.getEmail(), refreshExpiry);
     }
 
     public Jws<Claims> parseToken(String token){
@@ -51,10 +52,10 @@ public class JWTServiceImpl implements JWTService {
             return false;
         }
     }
-    private String getClaims(String email, Duration refreshExpiry) {
+    private String getClaims(UUID id, String email, Duration refreshExpiry) {
         Map<String,Object> claims = new HashMap<>();
         Instant now = Instant.now();
 
-        return Jwts.builder().claims().add(claims).subject(email).issuedAt(Date.from(now)).expiration(Date.from(now.plus(refreshExpiry))).and().signWith(secretKey).compact();
+        return Jwts.builder().claims().add(claims).id(id.toString()).subject(email).issuedAt(Date.from(now)).expiration(Date.from(now.plus(refreshExpiry))).and().signWith(secretKey).compact();
     }
 }

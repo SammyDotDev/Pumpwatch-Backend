@@ -1,6 +1,7 @@
 package com.devnaza.pumpwatch.modules.auth.service.impl;
 
 import com.devnaza.pumpwatch.exception.InvalidTokenException;
+import com.devnaza.pumpwatch.exception.UserAlreadyLoggedInException;
 import com.devnaza.pumpwatch.modules.auth.dto.TokenPair;
 import com.devnaza.pumpwatch.modules.auth.model.RefreshToken;
 import com.devnaza.pumpwatch.modules.auth.repository.RefreshTokenRepository;
@@ -39,6 +40,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken createRefreshToken(User user){
 //        create token
         String refreshToken = jwtServiceImpl.generateRefreshToken(user);
+        refreshTokenRepository.findByToken(refreshToken).ifPresent(refreshTokenRepository::delete);
 
 
 //        populate refresh_token entity

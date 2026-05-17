@@ -1,4 +1,4 @@
-package com.devnaza.pumpwatch.modules.auth.controller;
+package com.devnaza.pumpwatch.modules.auth;
 
 import com.devnaza.pumpwatch.dto.ApiResponseDto;
 import com.devnaza.pumpwatch.modules.auth.dto.RefreshTokenDto;
@@ -64,5 +64,9 @@ public class AuthController {
         return ResponseEntity.ok().body(tokens);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseDto> logout(@RequestHeader("Authorization") String authHeader){
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("Logged out successfully").data(authServiceImpl.logoutUser(authHeader)).build());
+    }
 
 }

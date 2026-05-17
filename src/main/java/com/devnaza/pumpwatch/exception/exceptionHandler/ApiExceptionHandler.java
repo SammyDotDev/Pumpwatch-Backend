@@ -1,7 +1,7 @@
-package com.devnaza.pumpwatch.exception;
+package com.devnaza.pumpwatch.exception.exceptionHandler;
 
 import com.devnaza.pumpwatch.dto.ErrorResponse;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.devnaza.pumpwatch.exception.*;
 import jakarta.servlet.ServletException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -97,6 +97,18 @@ public class ApiExceptionHandler {
                                               .statusCode(HttpStatus.BAD_REQUEST.value())
                                               .timestamp(System.currentTimeMillis())
                                               .build();
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(UserAlreadyLoggedInException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyLoggedInException(UserAlreadyLoggedInException exception){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(exception.getMessage())
+                .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(System.currentTimeMillis())
+                .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
     }

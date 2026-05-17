@@ -4,8 +4,7 @@ import com.devnaza.pumpwatch.exception.InvalidTokenException;
 import com.devnaza.pumpwatch.modules.auth.service.impl.AuthServiceImpl;
 import com.devnaza.pumpwatch.modules.auth.service.impl.JWTServiceImpl;
 import com.devnaza.pumpwatch.modules.user.dto.UserDto;
-import com.devnaza.pumpwatch.modules.user.service.UserServiceImpl;
-import com.devnaza.pumpwatch.utils.helpers.ToDto;
+import com.devnaza.pumpwatch.modules.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -14,8 +13,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,17 +35,15 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTServiceImpl jwtServiceImpl;
     private final AuthServiceImpl authServiceImpl;
-    private final ToDto toDto;
 
 
     private final HandlerExceptionResolver exceptionResolver;
 
     public JWTFilter(JWTServiceImpl jwtServiceImpl,
-                     AuthServiceImpl authServiceImpl, ToDto toDto,
+                     AuthServiceImpl authServiceImpl,
                      @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver){
         this.jwtServiceImpl = jwtServiceImpl;
         this.authServiceImpl = authServiceImpl;
-        this.toDto = toDto;
         this.exceptionResolver = exceptionResolver;
     }
 
@@ -93,8 +88,10 @@ public class JWTFilter extends OncePerRequestFilter {
 
               String email = claims.getSubject();
 
+              User user = authServiceImpl.loadUserByEmail(email);
               UserDto userDetails =
-                      toDto.convertToUserDto(authServiceImpl.loadUserByEmail(email));
+                      UserDto.builder().userId(user.getUserId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(user.getEmail()).phoneNumber(user.getPhoneNumber()).build();
+
               List<String> roles = claims.get("roles", List.class);
               if(roles == null){
                   roles = List.of();
